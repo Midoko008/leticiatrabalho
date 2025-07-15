@@ -1,0 +1,23 @@
+!Funções
+~Aicionar Estoque Feito (agora ele também aumenbta e diminui o estoque conforme você tira e coloca no carrinho, respectivamente)~
+~Somar valor da compra total de produtos~
+~Mostrar os produtos postados pela pessoa no perfil~
+~Abrir perfil de outras pessoas~
+~Editar perfil~
+Adicionar imagem sem precisar de link
+~Filtros de produtos (por categoria e nome)~
+~Barra de pesquisa~
+~Filtrar o que aparece em perfil de outro usuario~
+For you
+~Deletar produto~
+
+
+
+
+
+!Visual
+Melhorar o perfil
+
+
+
+~exemplo~ = Feito

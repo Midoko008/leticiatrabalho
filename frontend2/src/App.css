@@ -1,0 +1,416 @@
+/* Reset básico e fonte */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f2f5;
+  margin: 0;
+  padding: 0;
+}
+
+/* Container principal */
+.container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 30px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+}
+
+/* Títulos */
+h1, h2 {
+  text-align: center;
+  color: #333;
+}
+
+/* Formulário */
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 30px;
+}
+
+.formulario input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.formulario button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.formulario button:hover {
+  background-color: #0056b3;
+}
+
+/* Página Inicial */
+.pagina-inicial {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+/* Header da página inicial */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* Botões no topo */
+.botoes-topo {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* Botão perfil */
+.botao-perfil {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.botao-perfil:hover {
+  background-color: #0056b3;
+}
+
+/* Botão adicionar produto */
+.botao-adicionar {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.botao-adicionar:hover {
+  background-color: #1e7e34;
+}
+
+/* Botão do carrinho no topo */
+.botao-carrinho.topo {
+  background-color: #ffc107;
+  color: #000;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.botao-carrinho.topo:hover {
+  background-color: #e0a800;
+}
+
+/* Ícone do carrinho no topo */
+.icone-carrinho {
+  width: 24px;
+  height: 24px;
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
+  pointer-events: none;
+}
+
+/* Lista de produtos como flexbox */
+.lista-produtos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: flex-start;
+}
+
+/* Card individual de produto */
+.card-produto {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px 15px 40px 15px;
+  width: 220px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+  overflow: visible;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+}
+
+.card-produto:hover {
+  transform: scale(1.03);
+}
+
+/* Imagem do produto */
+.imagem-produto {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  background-color: #fff;
+  display: block;
+}
+
+/* Nome do produto */
+.card-produto h3 {
+  font-size: 18px;
+  color: #222;
+  margin: 0 0 8px 0;
+  text-align: center;
+}
+
+/* Preço do produto */
+.card-produto p {
+  font-size: 16px;
+  color: #555;
+  margin: 0;
+  font-weight: bold;
+}
+
+/* Botão de adicionar ao carrinho dentro do card */
+.botao-carrinho.card {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background-color: #ffc107;
+  border: none;
+  padding: 6px 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.botao-carrinho.card:hover {
+  background-color: #e0a800;
+}
+
+/* Ícone do carrinho dentro do card */
+.botao-carrinho.card .icone-carrinho {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2;
+  pointer-events: none;
+}
+
+/* Botão remover do carrinho */
+.botao-carrinho.remover {
+  background-color: #ff4d4d;
+  border: none;
+  border-radius: 50%;
+  padding: 10px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+}
+
+.botao-carrinho.remover:hover {
+  transform: scale(1.1);
+  background-color: #e60000;
+}
+
+.botao-carrinho.remover .icone-carrinho {
+  stroke: white;
+}
+
+/* Container do perfil */
+.perfil-container {
+  padding: 40px;
+  max-width: 600px;
+  margin: 50px auto 0 auto;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.perfil-titulo {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #333;
+}
+
+.perfil-box p {
+  font-size: 16px;
+  margin-bottom: 12px;
+  color: #555;
+}
+
+.perfil-box strong {
+  color: #000;
+}
+
+.botao-carrinho {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.botao-carrinho:hover {
+  background-color: #e0a800;
+}
+
+/* Responsividade */
+@media (max-width: 600px) {
+  .card-produto {
+    width: 100%;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .botoes-topo {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 8px;
+  }
+
+  .botao-perfil,
+  .botao-adicionar,
+  .botao-carrinho.topo {
+    width: 100%;
+  }
+}
+
+.carrinho-footer {
+  background-color: #fff;
+  padding: 20px 25px;
+  margin-top: 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.precoTotal {
+  font-size: 28px !important;
+  font-weight: 700;
+  color: #222;
+  margin: 0;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.confirmarCompra {
+  min-width: 160px;
+  text-align: center;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(33, 150, 243, 0.4);
+}
+
+.produtosPostados .card-produto {
+  align-items: center;
+  text-align: center;
+}
+
+.produtosPostados .imagem-produto {
+  margin: 0 auto 10px auto;
+  display: block;
+}
+
+.produtosPostados .card-produto h3,
+.produtosPostados .card-produto p {
+  text-align: center;
+  width: 100%;
+}
+
+.botao-perfil-salvar {
+  background-color: green;
+}
+
+.botao-perfil-cancelar {
+  background-color: red;
+}
+
+/* === BARRA DE PESQUISA E CATEGORIA OTIMIZADAS === */
+.barra-pesquisa {
+  width: 100%;
+  max-width: 300px;
+  padding: 8px 12px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  box-sizing: border-box;
+  max-height: 36px;
+}
+
+.select-categoria {
+  width: 100%;
+  max-width: 300px;
+  padding: 8px 12px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  background-color: #f8f8f8;
+  box-sizing: border-box;
+  max-height: 36px;
+}
+
+@media (max-width: 600px) {
+  .barra-pesquisa,
+  .select-categoria {
+    max-width: 100%;
+    font-size: 16px;
+    padding: 10px 14px;
+    max-height: 40px;
+  }
+}
+
+.filtros-container {
+  display: flex;
+  gap: 12px;              /* Espaço entre os campos */
+  margin-bottom: 20px;
+  flex-wrap: wrap;        /* Para empilhar em telas pequenas */
+  justify-content: center;
+}
+
+.barra-pesquisa,
+.select-categoria {
+  flex: 1 1 200px;         /* Cresce, mas com mínimo de 200px */
+  max-width: 300px;        /* Limita o tamanho máximo */
+}
