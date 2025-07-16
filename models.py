@@ -4,7 +4,7 @@ from datetime import date
 db = SQLAlchemy()
 
 class AcessadoresSite(db.Model):
-    __tablename__ = 'acessadores_site'  # Nome em snake_case, padrão SQL
+    __tablename__ = 'acessadores_site'
 
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(100), nullable=False)
@@ -45,16 +45,16 @@ class AcessadoresSite(db.Model):
             'idade': self.idade
         }
 
-class Categoria(db.Model):
-    __tablename__ = 'categoria'
+class Filtro(db.Model):
+    __tablename__ = 'filtro'
 
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(100), nullable=False, unique=True)
 
-    produtos = db.relationship('Produto', back_populates='categoria', cascade='all, delete-orphan')
+    produtos = db.relationship('Produto', back_populates='filtro', cascade='all, delete-orphan')
 
     def __repr__(self):
-        return f'<Categoria {self.nome}>'
+        return f'<Filtro {self.nome}>'
 
 class Produto(db.Model):
     __tablename__ = 'produtos'
@@ -65,10 +65,11 @@ class Produto(db.Model):
     imagem_url = db.Column(db.String(255))
     estoque = db.Column(db.Integer, nullable=False)
 
-    usuario_id = db.Column(db.Integer, db.ForeignKey('acessadores_site.id'), nullable=False)
-    categoria_id = db.Column(db.Integer, db.ForeignKey('categoria.id'), nullable=True)
+    acessadores_site_id = db.Column(db.Integer, db.ForeignKey('acessadores_site.id'), nullable=False)  # ALTERADO
 
-    categoria = db.relationship('Categoria', back_populates='produtos')
+    filtro_id = db.Column(db.Integer, db.ForeignKey('filtro.id'), nullable=False)
+    filtro = db.relationship('Filtro', back_populates='produtos')
+
     carrinho_items = db.relationship('Carrinho', back_populates='produto', cascade='all, delete-orphan')
 
     def __repr__(self):

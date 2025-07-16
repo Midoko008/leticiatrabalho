@@ -11,7 +11,6 @@ export default function Item() {
   const [usuarioLogado, setUsuarioLogado] = useState(null);
 
   useEffect(() => {
-    // Pega o usuário logado do localStorage (objeto completo)
     const usuario = JSON.parse(localStorage.getItem('usuario'));
     if (!usuario) {
       navigate('/login');
@@ -52,7 +51,6 @@ export default function Item() {
 
   if (loading || !produto || !usuarioLogado) return <div>Carregando...</div>;
 
-  // Função para deletar produto
   function deletarProduto() {
     if (!window.confirm('Tem certeza que deseja deletar este produto?')) return;
 
@@ -66,13 +64,12 @@ export default function Item() {
       .then(data => {
         alert(data.mensagem || data.erro);
         if (data.mensagem) {
-          navigate('/paginaInicial'); // Volta para página inicial após deletar
+          navigate('/paginaInicial');
         }
       })
       .catch(() => alert('Erro ao deletar produto'));
   }
 
-  // Permissão para deletar: se o id do usuário logado é igual ao id do usuário que postou o produto
   const podeDeletar = produto.usuario && usuarioLogado && (produto.usuario.id === usuarioLogado.id);
 
   return (
@@ -87,6 +84,10 @@ export default function Item() {
         style={{ width: '100%', height: 'auto', borderRadius: 8, marginBottom: 20 }}
       />
       <p><strong>Preço:</strong> R$ {produto.preco.toFixed(2)} <strong>Estoque: {produto.estoque}</strong></p>
+
+      {produto.filtro && (
+        <p><strong>Filtro:</strong> {produto.filtro.nome}</p>
+      )}
 
       {produto.usuario && (
         <p>

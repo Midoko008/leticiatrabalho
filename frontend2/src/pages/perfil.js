@@ -27,7 +27,7 @@ export default function Perfil() {
 
     fetch(urlUsuario, {
       headers: {
-        Authorization: `Bearer ${userFromStorage.id}`
+        'X-User-Id': userFromStorage.id
       }
     })
       .then(res => {
@@ -58,7 +58,7 @@ export default function Perfil() {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${usuarioLogado.id}`
+        'X-User-Id': usuarioLogado.id
       },
       body: JSON.stringify({
         nome: novoNome,
@@ -111,25 +111,30 @@ export default function Perfil() {
             <input type="email" value={novoEmail} onChange={e => setNovoEmail(e.target.value)} />
             <br/>
             <button
-            onClick={salvarEdicao}
-            className="botao-perfil botao-perfil-salvar"
-            style={{ marginTop: '15px', marginRight: '3px' }}>
+              onClick={salvarEdicao}
+              className="botao-perfil botao-perfil-salvar"
+              style={{ marginTop: '15px', marginRight: '3px' }}>
               Salvar
             </button>
-            <button onClick={() => setEditando(false)} className="botao-perfil botao-perfil-cancelar"style = {{marginLeft: '6px'}}>
+            <button
+              onClick={() => setEditando(false)}
+              className="botao-perfil botao-perfil-cancelar"
+              style={{ marginLeft: '6px' }}>
               Cancelar
             </button>
           </div>
         )}
 
-        {/* Botões inferiores: voltar + editar */}
         <div style={{ marginTop: '20px', display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
           <button onClick={() => navigate('/paginaInicial')} className="botao-perfil">
             Voltar para Página Inicial
           </button>
 
           {isMeuPerfil && !editando && (
-            <button onClick={() => setEditando(true)} className="botao-perfil" style={{ backgroundColor: '#17a2b8' }}>
+            <button
+              onClick={() => setEditando(true)}
+              className="botao-perfil"
+              style={{ backgroundColor: '#17a2b8' }}>
               Editar Informações
             </button>
           )}

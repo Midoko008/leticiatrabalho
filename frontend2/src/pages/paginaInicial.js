@@ -5,15 +5,15 @@ import '../App.css';
 export default function PaginaInicial() {
   const [produtosFiltrados, setProdutosFiltrados] = useState([]);
   const [filtro, setFiltro] = useState('');
-  const [categorias, setCategorias] = useState([]);
-  const [categoriaSelecionada, setCategoriaSelecionada] = useState('');
+  const [filtros, setFiltros] = useState([]);
+  const [filtroSelecionado, setFiltroSelecionado] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch('http://localhost:5000/categorias')
+    fetch('http://localhost:5000/filtros')
       .then(res => res.json())
-      .then(data => setCategorias(data))
-      .catch(err => console.error('Erro ao buscar categorias:', err));
+      .then(data => setFiltros(data))
+      .catch(err => console.error('Erro ao buscar filtros:', err));
   }, []);
 
   useEffect(() => {
@@ -22,8 +22,8 @@ export default function PaginaInicial() {
     const termo = filtro.trim();
     if (termo) {
       url = `http://localhost:5000/produtos/buscar?q=${encodeURIComponent(termo)}`;
-    } else if (categoriaSelecionada) {
-      url = `http://localhost:5000/produtos/categoria/${categoriaSelecionada}`;
+    } else if (filtroSelecionado) {
+      url = `http://localhost:5000/produtos/filtro/${filtroSelecionado}`;
     }
 
     fetch(url)
@@ -33,7 +33,7 @@ export default function PaginaInicial() {
         console.error('Erro ao buscar produtos:', err);
         setProdutosFiltrados([]);
       });
-  }, [filtro, categoriaSelecionada]);
+  }, [filtro, filtroSelecionado]);
 
   function irParaPerfil() {
     navigate('/perfil');
@@ -85,33 +85,31 @@ export default function PaginaInicial() {
         </div>
       </header>
 
-      {/* Barra de busca com classe */}
       <div className="filtros-container">
-      <input
-        type="text"
-        placeholder="Buscar produtos pelo nome..."
-        value={filtro}
-        onChange={e => {
-          setFiltro(e.target.value);
-          setCategoriaSelecionada('');
-        }}
-        className="barra-pesquisa"
-      />
+        <input
+          type="text"
+          placeholder="Buscar produtos pelo nome..."
+          value={filtro}
+          onChange={e => {
+            setFiltro(e.target.value);
+            setFiltroSelecionado('');
+          }}
+          className="barra-pesquisa"
+        />
 
-      {/* Filtro de categoria com classe */}
-      <select
-        value={categoriaSelecionada}
-        onChange={e => {
-          setCategoriaSelecionada(e.target.value);
-          setFiltro('');
-        }}
-        className="select-categoria"
-      >
-        <option value="">Filtrar por categoria...</option>
-        {categorias.map(c => (
-          <option key={c.id} value={c.id}>{c.nome}</option>
-        ))}
-      </select>
+        <select
+          value={filtroSelecionado}
+          onChange={e => {
+            setFiltroSelecionado(e.target.value);
+            setFiltro('');
+          }}
+          className="select-categoria"
+        >
+          <option value="">Filtrar por tipo...</option>
+          {filtros.map(f => (
+            <option key={f.id} value={f.id}>{f.nome}</option>
+          ))}
+        </select>
       </div>
 
       <div className="lista-produtos">
@@ -135,6 +133,7 @@ export default function PaginaInicial() {
               />
               <h3>{produto.nome}</h3>
               <p>Preço: R$ {produto.preco.toFixed(2)}</p>
+              {/* REMOVIDO A EXIBIÇÃO DO FILTRO AQUI */}
               <button
                 className="botao-carrinho card"
                 onClick={(e) => adicionarAoCarrinho(e, produto.id)}
