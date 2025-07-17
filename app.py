@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from models import db, AcessadoresSite, Produto, Carrinho, Filtro
+from models import db, AcessadoresSite, Livro, Carrinho, Filtro
 from datetime import datetime
 import bcrypt
 import traceback
@@ -152,63 +152,63 @@ def criar_filtro():
         db.session.rollback()
         return jsonify({'erro': 'Erro ao criar filtro'}), 500
 
-@app.route('/produtos', methods=['GET'])
-def listar_produtos():
-    produtos = Produto.query.all()
+@app.route('/livros', methods=['GET'])
+def listar_livros():
+    livros = Livro.query.all()
     lista = []
-    for p in produtos:
+    for l in livros:
         lista.append({
-            'id': p.id,
-            'nome': p.nome,
-            'preco': p.preco,
-            'imagem_url': p.imagem_url,
-            'estoque': p.estoque,
+            'id': l.id,
+            'nome': l.nome,
+            'preco': l.preco,
+            'imagem_url': l.imagem_url,
+            'estoque': l.estoque,
+            'sinopse': l.sinopse,
             'filtro': {
-                'id': p.filtro.id if p.filtro else None,
-                'nome': p.filtro.nome if p.filtro else None
+                'id': l.filtro.id if l.filtro else None,
+                'nome': l.filtro.nome if l.filtro else None
             }
         })
     return jsonify(lista)
 
-@app.route('/produtos/<int:id>', methods=['GET'])
-def obter_produto(id):
-    p = db.session.get(Produto, id)
-    if not p:
-        return jsonify({'erro': 'Produto não encontrado'}), 404
+@app.route('/livros/<int:id>', methods=['GET'])
+def obter_livro(id):
+    l = db.session.get(Livro, id)
+    if not l:
+        return jsonify({'erro': 'Livro não encontrado'}), 404
     return jsonify({
-        'id': p.id,
-        'nome': p.nome,
-        'preco': p.preco,
-        'imagem_url': p.imagem_url,
-        'estoque': p.estoque,
+        'id': l.id,
+        'nome': l.nome,
+        'preco': l.preco,
+        'imagem_url': l.imagem_url,
+        'estoque': l.estoque,
+        'sinopse': l.sinopse,
         'filtro': {
-            'id': p.filtro.id if p.filtro else None,
-            'nome': p.filtro.nome if p.filtro else None
+            'id': l.filtro.id if l.filtro else None,
+            'nome': l.filtro.nome if l.filtro else None
         },
         'usuario': {
-            'id': p.usuario.id,
-            'nome': p.usuario.nome
+            'id': l.usuario.id,
+            'nome': l.usuario.nome
         }
     })
 
-@app.route('/produtos', methods=['POST'])
-def criar_produto():
+@app.route('/livros', methods=['POST'])
+def criar_livro():
     usuario_logado = get_usuario_logado()
-    print("DEBUG - Usuário logado no backend:", usuario_logado)
     if not usuario_logado:
-        print("DEBUG - Usuário não autenticado. Falha na autenticação")
         return jsonify({'erro': 'Usuário não autenticado'}), 401
 
     dados = request.json
-    print("DEBUG - Dados recebidos para criar produto:", dados)
 
     nome = dados.get('nome')
     preco = dados.get('preco')
     imagem_url = dados.get('imagem_url')
     estoque = dados.get('estoque')
     filtro_id = dados.get('filtro_id')
+    sinopse = dados.get('sinopse')
 
-    if not nome or preco is None or not imagem_url or estoque is None or filtro_id is None:
+    if not nome or preco is None or not imagem_url or estoque is None or filtro_id is None or sinopse is None:
         return jsonify({'erro': 'Dados incompletos'}), 400
 
     try:
@@ -217,152 +217,164 @@ def criar_produto():
         filtro_id = int(filtro_id)
         if estoque <= 0:
             return jsonify({'erro': 'Estoque deve ser maior que zero'}), 400
-    except (ValueError, TypeError) as e:
-        print("[DEBUG] Erro na conversão de tipos:", e)
+    except (ValueError, TypeError):
         return jsonify({'erro': 'Preço, estoque ou filtro inválidos'}), 400
 
     filtro = db.session.get(Filtro, filtro_id)
     if not filtro:
         return jsonify({'erro': 'Filtro não encontrado'}), 404
 
-    novo_produto = Produto(
+    novo_livro = Livro(
         nome=nome,
         preco=preco,
         imagem_url=imagem_url,
         estoque=estoque,
         filtro_id=filtro_id,
-        acessadores_site_id=usuario_logado.id  # ALTERADO para novo campo
+        sinopse=sinopse,
+        acessadores_site_id=usuario_logado.id
     )
 
     try:
-        db.session.add(novo_produto)
+        db.session.add(novo_livro)
         db.session.commit()
-        return jsonify({'mensagem': 'Produto criado com sucesso!'}), 201
+        return jsonify({'mensagem': 'Livro criado com sucesso!'}), 201
     except Exception as e:
         db.session.rollback()
-        print("[ERROR] Erro ao salvar produto:")
         traceback.print_exc()
-        return jsonify({'erro': 'Erro ao salvar produto', 'detalhe': str(e)}), 500
+        return jsonify({'erro': 'Erro ao salvar livro', 'detalhe': str(e)}), 500
 
-
-@app.route('/produtos/<int:id>', methods=['DELETE'])
-def deletar_produto(id):
+@app.route('/livros/<int:id>', methods=['DELETE'])
+def deletar_livro(id):
     usuario_logado = get_usuario_logado()
     if not usuario_logado:
         return jsonify({'erro': 'Usuário não autenticado'}), 401
 
-    produto = db.session.get(Produto, id)
-    if not produto:
-        return jsonify({'erro': 'Produto não encontrado'}), 404
+    livro = db.session.get(Livro, id)
+    if not livro:
+        return jsonify({'erro': 'Livro não encontrado'}), 404
 
-    if usuario_logado.id != produto.acessadores_site_id and usuario_logado.tipo != 'admin':  # ALTERADO
+    if usuario_logado.id != livro.acessadores_site_id and usuario_logado.tipo != 'admin':
         return jsonify({'erro': 'Acesso negado'}), 403
 
     try:
-        Carrinho.query.filter_by(produto_id=id).delete()
-        db.session.delete(produto)
+        Carrinho.query.filter_by(livro_id=id).delete()
+        db.session.delete(livro)
         db.session.commit()
-        return jsonify({'mensagem': 'Produto deletado com sucesso'}), 200
+        return jsonify({'mensagem': 'Livro deletado com sucesso'}), 200
     except Exception:
         db.session.rollback()
-        return jsonify({'erro': 'Erro ao deletar produto'}), 500
+        return jsonify({'erro': 'Erro ao deletar livro'}), 500
+
+@app.route('/livros/usuario/<int:usuario_id>', methods=['GET'])
+def livros_por_usuario(usuario_id):
+    livros = Livro.query.filter_by(acessadores_site_id=usuario_id).all()
+    lista = []
+    for l in livros:
+        lista.append({
+            'id': l.id,
+            'nome': l.nome,
+            'preco': l.preco,
+            'imagem_url': l.imagem_url,
+            'estoque': l.estoque,
+            'sinopse': l.sinopse,
+            'filtro': {
+                'id': l.filtro.id if l.filtro else None,
+                'nome': l.filtro.nome if l.filtro else None
+            }
+        })
+    return jsonify(lista)
+
+@app.route('/livros/filtro/<int:filtro_id>', methods=['GET'])
+def livros_por_filtro(filtro_id):
+    livros = Livro.query.filter_by(filtro_id=filtro_id).all()
+    lista = []
+    for l in livros:
+        lista.append({
+            'id': l.id,
+            'nome': l.nome,
+            'preco': l.preco,
+            'imagem_url': l.imagem_url,
+            'estoque': l.estoque,
+            'sinopse': l.sinopse,
+            'filtro': {
+                'id': l.filtro.id if l.filtro else None,
+                'nome': l.filtro.nome if l.filtro else None
+            }
+        })
+    return jsonify(lista)
 
 @app.route('/carrinho', methods=['POST'])
 def adicionar_ao_carrinho():
+    usuario_logado = get_usuario_logado()
+    if not usuario_logado:
+        return jsonify({'erro': 'Usuário não autenticado'}), 401
+
     dados = request.json
-    produto_id = dados.get('produto_id')
-    produto = db.session.get(Produto, produto_id)
-    if not produto:
-        return jsonify({'erro': 'Produto não encontrado'}), 404
-    if produto.estoque <= 0:
-        return jsonify({'erro': 'Produto sem estoque'}), 400
+    livro_id = dados.get('livro_id')
+    livro = db.session.get(Livro, livro_id)
+    if not livro:
+        return jsonify({'erro': 'Livro não encontrado'}), 404
+    if livro.estoque <= 0:
+        return jsonify({'erro': 'Livro sem estoque'}), 400
 
     try:
-        novo_item = Carrinho(produto_id=produto.id)
-        produto.estoque -= 1
+        novo_item = Carrinho(livro_id=livro.id, usuario_id=usuario_logado.id)
+        livro.estoque -= 1
         db.session.add(novo_item)
         db.session.commit()
-        return jsonify({'mensagem': 'Produto adicionado ao carrinho!'}), 201
+        return jsonify({'mensagem': 'Livro adicionado ao carrinho!'}), 201
     except Exception as e:
         db.session.rollback()
         return jsonify({'erro': 'Erro ao adicionar ao carrinho', 'detalhe': str(e)}), 500
 
 @app.route('/carrinho', methods=['GET'])
 def listar_carrinho():
-    itens = Carrinho.query.all()
-    produtos = []
+    usuario_logado = get_usuario_logado()
+    if not usuario_logado:
+        return jsonify({'erro': 'Usuário não autenticado'}), 401
+
+    itens = Carrinho.query.filter_by(usuario_id=usuario_logado.id).all()
+    livros = []
     valor_total = 0.0
 
     for item in itens:
-        p = db.session.get(Produto, item.produto_id)
-        if p:
-            valor_total += p.preco
-            produtos.append({
-                'id': p.id,
-                'nome': p.nome,
-                'preco': p.preco,
-                'imagem_url': p.imagem_url,
-                'estoque': p.estoque,
+        l = db.session.get(Livro, item.livro_id)
+        if l:
+            valor_total += l.preco
+            livros.append({
+                'id': l.id,
+                'nome': l.nome,
+                'preco': l.preco,
+                'imagem_url': l.imagem_url,
+                'estoque': l.estoque,
                 'filtro': {
-                    'id': p.filtro.id if p.filtro else None,
-                    'nome': p.filtro.nome if p.filtro else None
+                    'id': l.filtro.id if l.filtro else None,
+                    'nome': l.filtro.nome if l.filtro else None
                 }
             })
 
-    return jsonify({'produtos': produtos, 'valor_total': f"{valor_total:.2f}"})
+    return jsonify({'produtos': livros, 'valor_total': f"{valor_total:.2f}"})
 
-@app.route('/carrinho/<int:produto_id>', methods=['DELETE'])
-def remover_do_carrinho(produto_id):
-    item = Carrinho.query.filter_by(produto_id=produto_id).first()
+@app.route('/carrinho/<int:livro_id>', methods=['DELETE'])
+def remover_do_carrinho(livro_id):
+    usuario_logado = get_usuario_logado()
+    if not usuario_logado:
+        return jsonify({'erro': 'Usuário não autenticado'}), 401
+
+    item = Carrinho.query.filter_by(livro_id=livro_id, usuario_id=usuario_logado.id).first()
     if not item:
-        return jsonify({'erro': 'Produto não está no carrinho'}), 404
+        return jsonify({'erro': 'Livro não está no carrinho'}), 404
 
     try:
-        produto = db.session.get(Produto, produto_id)
-        if produto:
-            produto.estoque += 1
+        livro = db.session.get(Livro, livro_id=livro_id)
+        if livro:
+            livro.estoque += 1
         db.session.delete(item)
         db.session.commit()
-        return jsonify({'mensagem': 'Produto removido do carrinho!'}), 200
+        return jsonify({'mensagem': 'Livro removido do carrinho!'}), 200
     except Exception as e:
         db.session.rollback()
         return jsonify({'erro': 'Erro ao remover do carrinho', 'detalhe': str(e)}), 500
-
-@app.route('/produtos/usuario/<int:usuario_id>', methods=['GET'])
-def produtos_por_usuario(usuario_id):
-    produtos = Produto.query.filter_by(acessadores_site_id=usuario_id).all()  # ALTERADO
-    lista = []
-    for p in produtos:
-        lista.append({
-            'id': p.id,
-            'nome': p.nome,
-            'preco': p.preco,
-            'imagem_url': p.imagem_url,
-            'estoque': p.estoque,
-            'filtro': {
-                'id': p.filtro.id if p.filtro else None,
-                'nome': p.filtro.nome if p.filtro else None
-            }
-        })
-    return jsonify(lista)
-
-@app.route('/produtos/filtro/<int:filtro_id>', methods=['GET'])
-def produtos_por_filtro(filtro_id):
-    produtos = Produto.query.filter_by(filtro_id=filtro_id).all()
-    lista = []
-    for p in produtos:
-        lista.append({
-            'id': p.id,
-            'nome': p.nome,
-            'preco': p.preco,
-            'imagem_url': p.imagem_url,
-            'estoque': p.estoque,
-            'filtro': {
-                'id': p.filtro.id if p.filtro else None,
-                'nome': p.filtro.nome if p.filtro else None
-            }
-        })
-    return jsonify(lista)
 
 if __name__ == '__main__':
     with app.app_context():

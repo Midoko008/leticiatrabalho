@@ -21,7 +21,7 @@ function App() {
         <Route path="/perfil" element={<Perfil />} />
         {/* Rota para perfil de outro usuário */}
         <Route path="/perfil/:id" element={<Perfil />} />
-        <Route path="/produto/:id" element={<Item />} />
+        <Route path="/livro/:id" element={<Item />} />
         <Route path="/adicionar-produto" element={<AdicionarProduto />} />
         <Route path="/carrinho" element={<Carrinho />} />
       </Routes>

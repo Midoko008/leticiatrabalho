@@ -7,7 +7,7 @@ export default function Perfil() {
 
   const [perfil, setPerfil] = useState(null);
   const [usuarioLogado, setUsuarioLogado] = useState(null);
-  const [produtosPostados, setProdutosPostados] = useState([]);
+  const [livrosPostados, setLivrosPostados] = useState([]);
   const [editando, setEditando] = useState(false);
   const [novoNome, setNovoNome] = useState('');
   const [novoEmail, setNovoEmail] = useState('');
@@ -41,14 +41,20 @@ export default function Perfil() {
       })
       .catch(err => console.error("Erro ao buscar dados do perfil", err));
 
-    const userIdParaProdutos = id || userFromStorage.id;
-    fetch(`http://localhost:5000/produtos/usuario/${userIdParaProdutos}`)
-      .then(res => res.json())
-      .then(data => setProdutosPostados(data))
-      .catch(err => console.error("Erro ao buscar produtos", err));
+    const userIdParaLivros = id || userFromStorage.id;
+    fetch(`http://localhost:5000/livros/usuario/${userIdParaLivros}`)
+      .then(res => {
+        if (!res.ok) throw new Error('Erro ao buscar livros do usuário');
+        return res.json();
+      })
+      .then(data => setLivrosPostados(data))
+      .catch(err => {
+        console.error("Erro ao buscar livros", err);
+        setLivrosPostados([]);
+      });
   }, [id, navigate]);
 
-  if (!perfil || !usuarioLogado) return <p>Carregando perfil...</p>;
+  if (!perfil || !usuarioLogado) return <p>Carregando perfil literário...</p>;
 
   const isMeuPerfil = !id || Number(usuarioLogado.id) === Number(id);
   const isAdmin = usuarioLogado.tipo === 'admin';
@@ -76,13 +82,13 @@ export default function Perfil() {
           setEditando(false);
         }
       })
-      .catch(() => alert('Erro ao atualizar informações'));
+      .catch(() => alert('Erro ao atualizar perfil literário'));
   }
 
   return (
     <div>
       <div className="perfil-container">
-        <h1>Perfil de {perfil.nome}</h1>
+        <h1>Perfil Literário de {perfil.nome}</h1>
 
         {!editando ? (
           <div className="perfil-box">
@@ -127,7 +133,7 @@ export default function Perfil() {
 
         <div style={{ marginTop: '20px', display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
           <button onClick={() => navigate('/paginaInicial')} className="botao-perfil">
-            Voltar para Página Inicial
+            Voltar para For You Books
           </button>
 
           {isMeuPerfil && !editando && (
@@ -135,24 +141,38 @@ export default function Perfil() {
               onClick={() => setEditando(true)}
               className="botao-perfil"
               style={{ backgroundColor: '#17a2b8' }}>
-              Editar Informações
+              Editar Perfil Literário
             </button>
           )}
         </div>
       </div>
 
-      <div className="produtosPostados" style={{ background: '#eee', padding: '20px', marginTop: '30px' }}>
-        <h2>Produtos Postados</h2>
+      <div className="livrosPostados" style={{ background: '#eee', padding: '20px', marginTop: '30px' }}>
+        <h2>Livros Publicados</h2>
 
-        {produtosPostados.length === 0 ? (
-          <p>Nenhum produto postado ainda.</p>
+        {livrosPostados.length === 0 ? (
+          <p style={{ textAlign: 'center' }}>Nenhum livro publicado ainda.</p>
         ) : (
-          <div className="lista-produtos">
-            {produtosPostados.map(produto => (
-              <div key={produto.id} className="card-produto" onClick={() => navigate(`/produto/${produto.id}`)}>
-                <img src={produto.imagem_url} alt={produto.nome} className="imagem-produto" />
-                <h3>{produto.nome}</h3>
-                <p>Preço: R$ {produto.preco.toFixed(2)}</p>
+          <div className="lista-produtos" style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '20px' }}>
+            {livrosPostados.map(livro => (
+              <div
+                key={livro.id}
+                className="card-produto"
+                onClick={() => navigate(`/livro/${livro.id}`)}
+                style={{ cursor: 'pointer', maxWidth: '250px' }}
+              >
+                <img
+                  src={livro.imagem_url}
+                  alt={livro.nome}
+                  className="imagem-produto"
+                  style={{ width: '100%', borderRadius: '8px' }}
+                  onError={e => {
+                    e.target.onerror = null;
+                    e.target.src = '/img/imagem-nao-disponivel.png';
+                  }}
+                />
+                <h3 style={{ margin: '10px 0 5px' }}>{livro.nome}</h3>
+                <p>Preço: R$ {livro.preco.toFixed(2)}</p>
               </div>
             ))}
           </div>

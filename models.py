@@ -16,7 +16,7 @@ class AcessadoresSite(db.Model):
     senha_hash = db.Column(db.Text)
     tipo = db.Column(db.String(20), default='comum')
 
-    produtos = db.relationship('Produto', backref='usuario')
+    livros = db.relationship('Livro', back_populates='usuario', cascade='all, delete-orphan')
 
     @staticmethod
     def calcular_idade(data_nascimento):
@@ -51,37 +51,39 @@ class Filtro(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(100), nullable=False, unique=True)
 
-    produtos = db.relationship('Produto', back_populates='filtro', cascade='all, delete-orphan')
+    livros = db.relationship('Livro', back_populates='filtro', cascade='all, delete-orphan')
 
     def __repr__(self):
         return f'<Filtro {self.nome}>'
 
-class Produto(db.Model):
-    __tablename__ = 'produtos'
+class Livro(db.Model):
+    __tablename__ = 'livro'
 
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(100), nullable=False)
     preco = db.Column(db.Float, nullable=False)
     imagem_url = db.Column(db.String(255))
     estoque = db.Column(db.Integer, nullable=False)
+    sinopse = db.Column(db.Text, nullable=False)
 
-    acessadores_site_id = db.Column(db.Integer, db.ForeignKey('acessadores_site.id'), nullable=False)  # ALTERADO
+    acessadores_site_id = db.Column(db.Integer, db.ForeignKey('acessadores_site.id'), nullable=False)
+    usuario = db.relationship('AcessadoresSite', back_populates='livros')
 
     filtro_id = db.Column(db.Integer, db.ForeignKey('filtro.id'), nullable=False)
-    filtro = db.relationship('Filtro', back_populates='produtos')
+    filtro = db.relationship('Filtro', back_populates='livros')
 
-    carrinho_items = db.relationship('Carrinho', back_populates='produto', cascade='all, delete-orphan')
+    carrinho_items = db.relationship('Carrinho', back_populates='livro', cascade='all, delete-orphan')
 
     def __repr__(self):
-        return f'<Produto {self.nome}>'
+        return f'<Livro {self.nome}>'
 
 class Carrinho(db.Model):
     __tablename__ = 'carrinho'
 
     id = db.Column(db.Integer, primary_key=True)
-    produto_id = db.Column(db.Integer, db.ForeignKey('produtos.id'), nullable=False)
+    livro_id = db.Column(db.Integer, db.ForeignKey('livro.id'), nullable=False)
 
-    produto = db.relationship('Produto', back_populates='carrinho_items')
+    livro = db.relationship('Livro', back_populates='carrinho_items')
 
     def __repr__(self):
-        return f'<Carrinho produto_id={self.produto_id}>'
+        return f'<Carrinho livro_id={self.livro_id}>'

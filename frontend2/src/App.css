@@ -6,6 +6,20 @@ body {
   padding: 0;
 }
 
+/* Fonte serifada para títulos e subtítulos */
+h1, h2, h3, strong {
+  font-family: 'Georgia', serif;
+  color: #2c3e50; /* Azul escuro suave */
+}
+
+/* Fonte principal para textos */
+body, p, span, input, button {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #34495e;
+  background-color: transparent;
+  margin: 0; /* Reset margin para evitar inconsistências */
+}
+
 /* Container principal */
 .container {
   max-width: 600px;
@@ -14,12 +28,14 @@ body {
   background-color: #fff;
   border-radius: 10px;
   box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+  box-sizing: border-box;
 }
 
 /* Títulos */
 h1, h2 {
   text-align: center;
   color: #333;
+  margin-bottom: 16px;
 }
 
 /* Formulário */
@@ -34,6 +50,8 @@ h1, h2 {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
+  font-size: 1rem;
+  box-sizing: border-box;
 }
 
 .formulario button {
@@ -53,10 +71,18 @@ h1, h2 {
 
 /* Página Inicial */
 .pagina-inicial {
-  padding: 20px;
-  font-family: Arial, sans-serif;
-  background-color: #f5f5f5;
+  background-color: #fefcf6; /* bege claro, papel antigo */
+  padding: 25px 20px 40px 20px;
+  border-radius: 12px;
+  max-width: 100%;
+  margin: 40px auto;
+  box-shadow:
+    0 6px 15px rgba(0, 0, 0, 0.08),
+    inset 0 0 5px #f7f2e7; /* leve textura interior */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #34495e;
   min-height: 100vh;
+  box-sizing: border-box;
 }
 
 /* Header da página inicial */
@@ -69,42 +95,62 @@ h1, h2 {
   gap: 10px;
 }
 
-/* Botões no topo */
+/* Container dos botões no topo (header) */
 .botoes-topo {
   display: flex;
+  gap: 12px;
+  flex-wrap: nowrap;
+  max-width: 420px;
+  width: 100%;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
+  box-sizing: border-box;
+}
+
+/* Botões perfil e adicionar (postar livro) */
+.botao-perfil,
+.botao-adicionar {
+  flex: 1 1 0;
+  height: 44px;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgb(75 101 135 / 0.3);
+  transition: all 0.25s ease-in-out;
+  user-select: none;
+  text-align: center;
+  margin: 0;
+  border: 1.5px solid transparent;
+  box-sizing: border-box;
 }
 
 /* Botão perfil */
 .botao-perfil {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.3s ease;
+  background-color: #4b6587; /* azul acinzentado */
+  color: #f0ead8; /* bege claro */
+  border-color: #4b6587;
 }
 
+/* Botão perfil hover */
 .botao-perfil:hover {
-  background-color: #0056b3;
+  background-color: #34495e; /* azul mais escuro */
+  border-color: #34495e;
+  box-shadow: 0 6px 12px rgb(52 73 94 / 0.6);
+  color: #e4dfca;
 }
 
-/* Botão adicionar produto */
+/* Botão adicionar produto tem cor verde distinta */
 .botao-adicionar {
   background-color: #28a745;
-  color: white;
   border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.3s ease;
+  color: white;
 }
 
+/* Botão adicionar hover */
 .botao-adicionar:hover {
   background-color: #1e7e34;
 }
@@ -122,6 +168,8 @@ h1, h2 {
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 44px; /* Para alinhar com outros botões */
+  box-sizing: border-box;
 }
 
 .botao-carrinho.topo:hover {
@@ -144,6 +192,7 @@ h1, h2 {
   flex-wrap: wrap;
   gap: 20px;
   justify-content: flex-start;
+  box-sizing: border-box;
 }
 
 /* Card individual de produto */
@@ -162,6 +211,7 @@ h1, h2 {
   align-items: center;
   position: relative;
   cursor: pointer;
+  box-sizing: border-box;
 }
 
 .card-produto:hover {
@@ -193,6 +243,7 @@ h1, h2 {
   color: #555;
   margin: 0;
   font-weight: bold;
+  text-align: center;
 }
 
 /* Botão de adicionar ao carrinho dentro do card */
@@ -209,6 +260,7 @@ h1, h2 {
   display: flex;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
 }
 
 .botao-carrinho.card:hover {
@@ -238,6 +290,7 @@ h1, h2 {
   position: absolute;
   bottom: 10px;
   right: 10px;
+  box-sizing: border-box;
 }
 
 .botao-carrinho.remover:hover {
@@ -258,6 +311,7 @@ h1, h2 {
   border-radius: 12px;
   box-shadow: 0 3px 8px rgba(0,0,0,0.1);
   text-align: center;
+  box-sizing: border-box;
 }
 
 .perfil-titulo {
@@ -270,12 +324,27 @@ h1, h2 {
   font-size: 16px;
   margin-bottom: 12px;
   color: #555;
+  word-wrap: break-word;
 }
 
 .perfil-box strong {
   color: #000;
 }
 
+/* Botões salvar e cancelar perfil */
+.botao-perfil-salvar {
+  background-color: #28a745 !important;
+  color: white !important;
+  border-color: #28a745 !important;
+}
+
+.botao-perfil-cancelar {
+  background-color: #dc3545 !important;
+  color: white !important;
+  border-color: #dc3545 !important;
+}
+
+/* Botão carrinho (geral) */
 .botao-carrinho {
   padding: 10px 20px;
   border: none;
@@ -290,7 +359,7 @@ h1, h2 {
 }
 
 /* Responsividade */
-@media (max-width: 600px) {
+@media (max-width: 720px) {
   .card-produto {
     width: 100%;
   }
@@ -301,116 +370,114 @@ h1, h2 {
   }
 
   .botoes-topo {
-    width: 100%;
-    justify-content: flex-start;
-    gap: 8px;
+    flex-direction: column;
+    align-items: stretch;
+    max-width: 100%;
+    gap: 12px;
   }
 
   .botao-perfil,
   .botao-adicionar,
   .botao-carrinho.topo {
+    flex: none;
     width: 100%;
+    min-width: auto;
+    height: 44px;
+    margin-bottom: 10px;
   }
 }
 
-.carrinho-footer {
-  background-color: #fff;
-  padding: 20px 25px;
-  margin-top: 40px;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-}
-
-.precoTotal {
-  font-size: 28px !important;
-  font-weight: 700;
-  color: #222;
-  margin: 0;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.confirmarCompra {
-  min-width: 160px;
-  text-align: center;
-  font-weight: 600;
-  box-shadow: 0 2px 6px rgba(33, 150, 243, 0.4);
-}
-
-.produtosPostados .card-produto {
-  align-items: center;
-  text-align: center;
-}
-
-.produtosPostados .imagem-produto {
-  margin: 0 auto 10px auto;
-  display: block;
-}
-
-.produtosPostados .card-produto h3,
-.produtosPostados .card-produto p {
-  text-align: center;
-  width: 100%;
-}
-
-.botao-perfil-salvar {
-  background-color: green;
-}
-
-.botao-perfil-cancelar {
-  background-color: red;
-}
-
-/* === BARRA DE PESQUISA E CATEGORIA OTIMIZADAS === */
-.barra-pesquisa {
-  width: 100%;
+/* Ajuste na barra de pesquisa e select categoria */
+.barra-pesquisa,
+.select-categoria {
+  flex: 1 1 200px;
   max-width: 300px;
   padding: 8px 12px;
-  margin-bottom: 15px;
   border-radius: 8px;
   border: 1px solid #ccc;
   font-size: 14px;
   box-sizing: border-box;
   max-height: 36px;
+}
+
+.barra-pesquisa {
+  margin-bottom: 15px;
 }
 
 .select-categoria {
-  width: 100%;
-  max-width: 300px;
-  padding: 8px 12px;
   margin-bottom: 20px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 14px;
   background-color: #f8f8f8;
-  box-sizing: border-box;
-  max-height: 36px;
 }
 
-@media (max-width: 600px) {
-  .barra-pesquisa,
-  .select-categoria {
-    max-width: 100%;
-    font-size: 16px;
-    padding: 10px 14px;
-    max-height: 40px;
-  }
-}
-
+/* Filtros container */
 .filtros-container {
   display: flex;
-  gap: 12px;              /* Espaço entre os campos */
+  gap: 12px;
   margin-bottom: 20px;
-  flex-wrap: wrap;        /* Para empilhar em telas pequenas */
+  flex-wrap: wrap;
   justify-content: center;
 }
 
-.barra-pesquisa,
-.select-categoria {
-  flex: 1 1 200px;         /* Cresce, mas com mínimo de 200px */
-  max-width: 300px;        /* Limita o tamanho máximo */
+/* Página inicial imagem do livro */
+.pagina-inicial img {
+  max-height: 360px;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 3px 12px rgb(0 0 0 / 0.1);
+  margin-bottom: 22px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Sinopse com fundo "papel" */
+.pagina-inicial > div[style*="background-color: #fafafa"] {
+  background-color: #fcf9f3;
+  border-left: 4px solid #9a7d4e; /* tom mostarda */
+  padding: 18px 20px;
+  font-style: italic;
+  font-size: 1.05rem;
+  color: #5d533b;
+  box-shadow: inset 2px 2px 4px rgba(154,125,78,0.1);
+  line-height: 1.5;
+  margin-top: 24px;
+  border-radius: 6px;
+}
+
+/* Link para perfil */
+.pagina-inicial p strong + span {
+  font-weight: 600;
+  color: #4a6fa5;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: color 0.3s ease;
+}
+
+.pagina-inicial p strong + span:hover {
+  color: #2c3e50;
+}
+
+/* Botões para adicionar/remover do carrinho lado a lado */
+.botao-perfil {
+  min-width: 190px;
+  margin: 12px 8px 0 8px;
+  display: inline-block;
+  text-align: center;
+}
+
+/* Responsividade mais suave */
+@media (max-width: 650px) {
+  .pagina-inicial {
+    margin: 30px 15px;
+    padding: 20px 15px 35px 15px;
+  }
+
+  .botao-perfil {
+    width: 100%;
+    margin: 10px 0;
+  }
+
+  .pagina-inicial img {
+    max-height: 280px;
+  }
 }

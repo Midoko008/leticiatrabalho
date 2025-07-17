@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
-export default function Item() {
+export default function Livro() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [produto, setProduto] = useState(null);
+  const [livro, setLivro] = useState(null);
   const [loading, setLoading] = useState(true);
   const [noCarrinho, setNoCarrinho] = useState(false);
   const [usuarioLogado, setUsuarioLogado] = useState(null);
@@ -18,13 +18,13 @@ export default function Item() {
     }
     setUsuarioLogado(usuario);
 
-    fetch(`http://localhost:5000/produtos/${id}`)
+    fetch(`http://localhost:5000/livro/${id}`)
       .then(res => {
-        if (!res.ok) throw new Error('Produto não encontrado');
+        if (!res.ok) throw new Error('Livro não encontrado');
         return res.json();
       })
       .then(data => {
-        setProduto(data);
+        setLivro(data);
         setLoading(false);
       })
       .catch(err => {
@@ -38,26 +38,27 @@ export default function Item() {
 
     fetch('http://localhost:5000/carrinho', {
       headers: {
-        Authorization: `Bearer ${usuarioLogado.id}`
+        'X-User-Id': usuarioLogado.id
       }
     })
       .then(res => res.json())
       .then(data => {
-        const estaNoCarrinho = data.produtos?.some(item => item.id === Number(id)) || false;
+        // Verifica se o livro está no carrinho pelo livro_id
+        const estaNoCarrinho = data.produtos?.some(item => item.livro_id === Number(id)) || false;
         setNoCarrinho(estaNoCarrinho);
       })
       .catch(() => setNoCarrinho(false));
   }, [id, usuarioLogado]);
 
-  if (loading || !produto || !usuarioLogado) return <div>Carregando...</div>;
+  if (loading || !livro || !usuarioLogado) return <div>Carregando...</div>;
 
-  function deletarProduto() {
-    if (!window.confirm('Tem certeza que deseja deletar este produto?')) return;
+  function deletarLivro() {
+    if (!window.confirm('Tem certeza que deseja deletar este livro?')) return;
 
-    fetch(`http://localhost:5000/produtos/${produto.id}`, {
+    fetch(`http://localhost:5000/livro/${livro.id}`, {
       method: 'DELETE',
       headers: {
-        Authorization: `Bearer ${usuarioLogado.id}`
+        'X-User-Id': usuarioLogado.id
       }
     })
       .then(res => res.json())
@@ -67,36 +68,85 @@ export default function Item() {
           navigate('/paginaInicial');
         }
       })
-      .catch(() => alert('Erro ao deletar produto'));
+      .catch(() => alert('Erro ao deletar livro'));
   }
 
-  const podeDeletar = produto.usuario && usuarioLogado && (produto.usuario.id === usuarioLogado.id);
+  // Pode deletar se for dono do livro ou admin
+  const podeDeletar =
+    livro.usuario &&
+    usuarioLogado &&
+    (livro.usuario.id === usuarioLogado.id || usuarioLogado.tipo === 'admin');
 
   return (
-    <div className="pagina-inicial" style={{ maxWidth: 600, margin: '40px auto' }}>
+    <div
+      className="pagina-inicial"
+      style={{
+        maxWidth: 600,
+        margin: '40px auto',
+        padding: 20,
+        backgroundColor: '#fffef8',
+        borderRadius: 10,
+        boxShadow: '0 0 10px rgba(0,0,0,0.1)'
+      }}
+    >
       <button className="botao-perfil" onClick={() => navigate('/paginaInicial')}>
         Voltar
       </button>
-      <h1>{produto.nome}</h1>
-      <img
-        src={produto.imagem_url}
-        alt={produto.nome}
-        style={{ width: '100%', height: 'auto', borderRadius: 8, marginBottom: 20 }}
-      />
-      <p><strong>Preço:</strong> R$ {produto.preco.toFixed(2)} <strong>Estoque: {produto.estoque}</strong></p>
 
-      {produto.filtro && (
-        <p><strong>Filtro:</strong> {produto.filtro.nome}</p>
+      <h1 style={{ marginTop: 20 }}>{livro.nome}</h1>
+
+      <img
+        src={livro.imagem_url}
+        alt={livro.nome}
+        style={{
+          width: '100%',
+          height: 'auto',
+          borderRadius: 8,
+          marginBottom: 20,
+          boxShadow: '0 0 5px rgba(0,0,0,0.15)'
+        }}
+        onError={e => {
+          e.target.onerror = null;
+          e.target.src = '/img/imagem-nao-disponivel.png';
+        }}
+      />
+
+      <p>
+        <strong>Preço:</strong> R$ {livro.preco.toFixed(2)}
+      </p>
+      <p>
+        <strong>Estoque:</strong> {livro.estoque}
+      </p>
+
+      {livro.filtro && (
+        <p>
+          <strong>Categoria:</strong> {livro.filtro.nome}
+        </p>
       )}
 
-      {produto.usuario && (
-        <p>
+      {livro.sinopse && (
+        <div
+          style={{
+            marginTop: 30,
+            padding: 20,
+            backgroundColor: '#f9f9f9',
+            borderLeft: '5px solid #007bff',
+            borderRadius: 6
+          }}
+        >
+          <h3 style={{ marginBottom: 10 }}>📖 Sinopse</h3>
+          <p style={{ lineHeight: 1.6, whiteSpace: 'pre-line' }}>{livro.sinopse}</p>
+        </div>
+      )}
+
+      {livro.usuario && (
+        <p style={{ marginTop: 20 }}>
           <strong>Postado por: </strong>
           <span
-            onClick={() => navigate(`/perfil/${produto.usuario.id}`)}
+            onClick={() => navigate(`/perfil/${livro.usuario.id}`)}
             style={{ color: '#007bff', cursor: 'pointer', textDecoration: 'underline' }}
           >
-            {produto.usuario.nome}
+            {livro.usuario.nome}
           </span>
         </p>
       )}
@@ -109,9 +159,9 @@ export default function Item() {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                Authorization: `Bearer ${usuarioLogado.id}`
+                'X-User-Id': usuarioLogado.id
               },
-              body: JSON.stringify({ produto_id: produto.id })
+              body: JSON.stringify({ livro_id: livro.id })
             })
               .then(res => res.json())
               .then(data => {
@@ -129,10 +179,10 @@ export default function Item() {
         <button
           className="botao-perfil"
           onClick={() => {
-            fetch(`http://localhost:5000/carrinho/${produto.id}`, {
+            fetch(`http://localhost:5000/carrinho/${livro.id}`, {
               method: 'DELETE',
               headers: {
-                Authorization: `Bearer ${usuarioLogado.id}`
+                'X-User-Id': usuarioLogado.id
               }
             })
               .then(res => res.json())
@@ -152,9 +202,9 @@ export default function Item() {
         <button
           className="botao-perfil"
           style={{ backgroundColor: '#b22222', marginTop: 20 }}
-          onClick={deletarProduto}
+          onClick={deletarLivro}
         >
-          Deletar Produto
+          Deletar Livro
         </button>
       )}
     </div>

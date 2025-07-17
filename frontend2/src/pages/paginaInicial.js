@@ -7,32 +7,52 @@ export default function PaginaInicial() {
   const [filtro, setFiltro] = useState('');
   const [filtros, setFiltros] = useState([]);
   const [filtroSelecionado, setFiltroSelecionado] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [erro, setErro] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     fetch('http://localhost:5000/filtros')
       .then(res => res.json())
       .then(data => setFiltros(data))
-      .catch(err => console.error('Erro ao buscar filtros:', err));
+      .catch(err => {
+        console.error('Erro ao buscar filtros:', err);
+        setFiltros([]);
+      });
   }, []);
 
   useEffect(() => {
-    let url = 'http://localhost:5000/produtos';
+    async function buscarProdutos() {
+      setLoading(true);
+      setErro(null);
+      try {
+        let url = 'http://localhost:5000/livro';
 
-    const termo = filtro.trim();
-    if (termo) {
-      url = `http://localhost:5000/produtos/buscar?q=${encodeURIComponent(termo)}`;
-    } else if (filtroSelecionado) {
-      url = `http://localhost:5000/produtos/filtro/${filtroSelecionado}`;
+        if (filtroSelecionado) {
+          url = `http://localhost:5000/livro/filtro/${filtroSelecionado}`;
+        }
+
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`Erro ao buscar livros: ${res.statusText}`);
+        let data = await res.json();
+
+        // Filtra pelo título localmente
+        if (filtro.trim()) {
+          const termo = filtro.trim().toLowerCase();
+          data = data.filter(l => l.nome.toLowerCase().includes(termo));
+        }
+
+        setProdutosFiltrados(data);
+      } catch (err) {
+        console.error(err);
+        setErro('Não foi possível carregar os livros.');
+        setProdutosFiltrados([]);
+      } finally {
+        setLoading(false);
+      }
     }
 
-    fetch(url)
-      .then(res => res.json())
-      .then(data => setProdutosFiltrados(data))
-      .catch(err => {
-        console.error('Erro ao buscar produtos:', err);
-        setProdutosFiltrados([]);
-      });
+    buscarProdutos();
   }, [filtro, filtroSelecionado]);
 
   function irParaPerfil() {
@@ -40,7 +60,7 @@ export default function PaginaInicial() {
   }
 
   function abrirDetalhes(id) {
-    navigate(`/produto/${id}`);
+    navigate(`/livro/${id}`);
   }
 
   function irParaAdicionarProduto() {
@@ -56,30 +76,43 @@ export default function PaginaInicial() {
     fetch('http://localhost:5000/carrinho', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ produto_id: produtoId }),
+      body: JSON.stringify({ livro_id: produtoId }),
     })
       .then(res => res.json())
       .then(data => alert(data.mensagem || data.erro))
-      .catch(() => alert('Erro ao adicionar ao carrinho'));
+      .catch(() => alert('Erro ao adicionar à estante'));
   }
 
   return (
     <div className="pagina-inicial">
       <header className="header">
-        <h1>Feed de Produtos</h1>
+        <h1>For You Books</h1>
         <div className="botoes-topo">
-          <button className="botao-perfil" onClick={irParaPerfil}>Ver Perfil</button>
-          <button className="botao-adicionar" onClick={irParaAdicionarProduto}>Adicionar Produto</button>
+          <button className="botao-perfil" onClick={irParaPerfil}>
+            Meu Perfil Literário
+          </button>
+          <button className="botao-adicionar" onClick={irParaAdicionarProduto}>
+            Publicar Livro
+          </button>
           <button
             className="botao-carrinho topo"
             onClick={irParaCarrinho}
-            aria-label="Ver carrinho"
-            title="Ver carrinho"
+            aria-label="Minha Estante"
+            title="Minha Estante"
           >
-            <svg className="icone-carrinho" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="24" height="24">
-              <circle cx="9" cy="21" r="1"></circle>
-              <circle cx="20" cy="21" r="1"></circle>
-              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            <svg
+              className="icone-carrinho"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              width="24"
+              height="24"
+            >
+              <path d="M4 19.5V6.5C4 5.67 4.67 5 5.5 5H18.5C19.33 5 20 5.67 20 6.5V19.5L12 16L4 19.5Z" />
             </svg>
           </button>
         </div>
@@ -88,13 +121,14 @@ export default function PaginaInicial() {
       <div className="filtros-container">
         <input
           type="text"
-          placeholder="Buscar produtos pelo nome..."
+          placeholder="Buscar livros pelo título..."
           value={filtro}
           onChange={e => {
             setFiltro(e.target.value);
             setFiltroSelecionado('');
           }}
           className="barra-pesquisa"
+          aria-label="Busca livros pelo título"
         />
 
         <select
@@ -104,62 +138,66 @@ export default function PaginaInicial() {
             setFiltro('');
           }}
           className="select-categoria"
+          aria-label="Filtrar por gênero"
         >
-          <option value="">Filtrar por tipo...</option>
+          <option value="">Filtrar por gênero...</option>
           {filtros.map(f => (
-            <option key={f.id} value={f.id}>{f.nome}</option>
+            <option key={f.id} value={f.id}>
+              {f.nome}
+            </option>
           ))}
         </select>
       </div>
 
+      {loading && <p>Carregando livros...</p>}
+      {erro && <p style={{ color: 'red' }}>{erro}</p>}
+
       <div className="lista-produtos">
-        {produtosFiltrados.length === 0 ? (
-          <p>Nenhum produto encontrado.</p>
-        ) : (
-          produtosFiltrados.map(produto => (
-            <div
-              key={produto.id}
-              className="card-produto"
-              onClick={() => abrirDetalhes(produto.id)}
+        {!loading && produtosFiltrados.length === 0 && <p>Nenhum livro encontrado.</p>}
+
+        {produtosFiltrados.map(produto => (
+          <div
+            key={produto.id}
+            className="card-produto"
+            onClick={() => abrirDetalhes(produto.id)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={e => (e.key === 'Enter' ? abrirDetalhes(produto.id) : null)}
+          >
+            <img
+              src={produto.imagem_url}
+              alt={produto.nome}
+              className="imagem-produto"
+              onError={e => {
+                e.target.onerror = null;
+                e.target.src = '/img/imagem-nao-disponivel.png';
+              }}
+            />
+            <h3>{produto.nome}</h3>
+            <p>Preço: R$ {produto.preco.toFixed(2)}</p>
+            <button
+              className="botao-carrinho card"
+              onClick={e => adicionarAoCarrinho(e, produto.id)}
+              aria-label={`Adicionar "${produto.nome}" à estante`}
+              title="Adicionar à estante"
             >
-              <img
-                src={produto.imagem_url}
-                alt={produto.nome}
-                className="imagem-produto"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = '/img/imagem-nao-disponivel.png';
-                }}
-              />
-              <h3>{produto.nome}</h3>
-              <p>Preço: R$ {produto.preco.toFixed(2)}</p>
-              {/* REMOVIDO A EXIBIÇÃO DO FILTRO AQUI */}
-              <button
-                className="botao-carrinho card"
-                onClick={(e) => adicionarAoCarrinho(e, produto.id)}
-                aria-label={`Adicionar ${produto.nome} ao carrinho`}
-                title="Adicionar ao carrinho"
+              <svg
+                className="icone-carrinho"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                width="20"
+                height="20"
               >
-                <svg
-                  className="icone-carrinho"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  width="20"
-                  height="20"
-                >
-                  <circle cx="9" cy="21" r="1"></circle>
-                  <circle cx="20" cy="21" r="1"></circle>
-                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                </svg>
-              </button>
-            </div>
-          ))
-        )}
+                <path d="M4 19.5V6.5C4 5.67 4.67 5 5.5 5H18.5C19.33 5 20 5.67 20 6.5V19.5L12 16L4 19.5Z" />
+              </svg>
+            </button>
+          </div>
+        ))}
       </div>
     </div>
   );
