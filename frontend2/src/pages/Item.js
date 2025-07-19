@@ -18,7 +18,7 @@ export default function Livro() {
     }
     setUsuarioLogado(usuario);
 
-    fetch(`http://localhost:5000/livro/${id}`)
+    fetch(`http://localhost:5000/livros/${id}`)
       .then(res => {
         if (!res.ok) throw new Error('Livro não encontrado');
         return res.json();
@@ -55,7 +55,7 @@ export default function Livro() {
   function deletarLivro() {
     if (!window.confirm('Tem certeza que deseja deletar este livro?')) return;
 
-    fetch(`http://localhost:5000/livro/${livro.id}`, {
+    fetch(`http://localhost:5000/livros/${livro.id}`, {
       method: 'DELETE',
       headers: {
         'X-User-Id': usuarioLogado.id

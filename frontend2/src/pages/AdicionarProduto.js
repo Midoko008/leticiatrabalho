@@ -66,7 +66,7 @@ export default function AdicionarLivro() {
       return;
     }
 
-    fetch('http://localhost:5000/livro', {
+    fetch('http://localhost:5000/livros', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -76,7 +76,7 @@ export default function AdicionarLivro() {
         estoque: parseInt(estoque),
         filtro_id: parseInt(filtroId),
         sinopse: sinopse.trim(),
-        usuario_id: usuario.id
+        acessadores_site_id: usuario.id
       })
     })
       .then(async (res) => {

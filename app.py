@@ -318,7 +318,7 @@ def adicionar_ao_carrinho():
         return jsonify({'erro': 'Livro sem estoque'}), 400
 
     try:
-        novo_item = Carrinho(livro_id=livro.id, usuario_id=usuario_logado.id)
+        novo_item = Carrinho(livro_id=livro.id, acessadores_site_id=usuario_logado.id)
         livro.estoque -= 1
         db.session.add(novo_item)
         db.session.commit()
@@ -333,7 +333,7 @@ def listar_carrinho():
     if not usuario_logado:
         return jsonify({'erro': 'Usuário não autenticado'}), 401
 
-    itens = Carrinho.query.filter_by(usuario_id=usuario_logado.id).all()
+    itens = Carrinho.query.filter_by(acessadores_site_id=usuario_logado.id).all()
     livros = []
     valor_total = 0.0
 
@@ -361,12 +361,12 @@ def remover_do_carrinho(livro_id):
     if not usuario_logado:
         return jsonify({'erro': 'Usuário não autenticado'}), 401
 
-    item = Carrinho.query.filter_by(livro_id=livro_id, usuario_id=usuario_logado.id).first()
+    item = Carrinho.query.filter_by(livro_id=livro_id, acessadores_site_id=usuario_logado.id).first()
     if not item:
         return jsonify({'erro': 'Livro não está no carrinho'}), 404
 
     try:
-        livro = db.session.get(Livro, livro_id=livro_id)
+        livro = db.session.get(Livro, livro_id)
         if livro:
             livro.estoque += 1
         db.session.delete(item)
@@ -375,6 +375,7 @@ def remover_do_carrinho(livro_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({'erro': 'Erro ao remover do carrinho', 'detalhe': str(e)}), 500
+
 
 if __name__ == '__main__':
     with app.app_context():

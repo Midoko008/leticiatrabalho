@@ -26,17 +26,17 @@ export default function PaginaInicial() {
       setLoading(true);
       setErro(null);
       try {
-        let url = 'http://localhost:5000/livro';
+        let url = 'http://localhost:5000/livros';
 
         if (filtroSelecionado) {
-          url = `http://localhost:5000/livro/filtro/${filtroSelecionado}`;
+          url = `http://localhost:5000/livros/filtro/${filtroSelecionado}`;
         }
 
         const res = await fetch(url);
         if (!res.ok) throw new Error(`Erro ao buscar livros: ${res.statusText}`);
         let data = await res.json();
 
-        // Filtra pelo título localmente
+        // Filtra pelo título localmente usando 'nome' (ajustado)
         if (filtro.trim()) {
           const termo = filtro.trim().toLowerCase();
           data = data.filter(l => l.nome.toLowerCase().includes(termo));
@@ -60,7 +60,7 @@ export default function PaginaInicial() {
   }
 
   function abrirDetalhes(id) {
-    navigate(`/livro/${id}`);
+    navigate(`/livros/${id}`);
   }
 
   function irParaAdicionarProduto() {
@@ -71,12 +71,12 @@ export default function PaginaInicial() {
     navigate('/carrinho');
   }
 
-  function adicionarAoCarrinho(e, produtoId) {
+  function adicionarAoCarrinho(e, livroId) {
     e.stopPropagation();
     fetch('http://localhost:5000/carrinho', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ livro_id: produtoId }),
+      body: JSON.stringify({ livro_id: livroId }),
     })
       .then(res => res.json())
       .then(data => alert(data.mensagem || data.erro))
@@ -155,30 +155,30 @@ export default function PaginaInicial() {
       <div className="lista-produtos">
         {!loading && produtosFiltrados.length === 0 && <p>Nenhum livro encontrado.</p>}
 
-        {produtosFiltrados.map(produto => (
+        {produtosFiltrados.map(livro => (
           <div
-            key={produto.id}
+            key={livro.id}
             className="card-produto"
-            onClick={() => abrirDetalhes(produto.id)}
+            onClick={() => abrirDetalhes(livro.id)}
             role="button"
             tabIndex={0}
-            onKeyDown={e => (e.key === 'Enter' ? abrirDetalhes(produto.id) : null)}
+            onKeyDown={e => (e.key === 'Enter' ? abrirDetalhes(livro.id) : null)}
           >
             <img
-              src={produto.imagem_url}
-              alt={produto.nome}
+              src={livro.imagem_url}
+              alt={livro.nome}
               className="imagem-produto"
               onError={e => {
                 e.target.onerror = null;
                 e.target.src = '/img/imagem-nao-disponivel.png';
               }}
             />
-            <h3>{produto.nome}</h3>
-            <p>Preço: R$ {produto.preco.toFixed(2)}</p>
+            <h3>{livro.nome}</h3>
+            <p>Preço: R$ {livro.preco.toFixed(2)}</p>
             <button
               className="botao-carrinho card"
-              onClick={e => adicionarAoCarrinho(e, produto.id)}
-              aria-label={`Adicionar "${produto.nome}" à estante`}
+              onClick={e => adicionarAoCarrinho(e, livro.id)}
+              aria-label={`Adicionar "${livro.nome}" à estante`}
               title="Adicionar à estante"
             >
               <svg

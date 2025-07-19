@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import '../App.css';
 
 export default function Cadastro() {
@@ -43,7 +44,7 @@ export default function Cadastro() {
 
   return (
     <div className="container">
-      <h2>Cadastro de Usuário</h2>
+      <h2>Cadastro de Booker</h2>
       <form onSubmit={handleSubmit} className="formulario">
         {['nome', 'email', 'cep', 'cpf', 'data_nascimento', 'senha'].map((campo) => (
           <input
@@ -59,6 +60,11 @@ export default function Cadastro() {
         <button type="submit">Cadastrar</button>
         {mensagem && <p style={{ marginTop: '10px', color: 'blue' }}>{mensagem}</p>}
       </form>
+
+      {/* Link para login */}
+      <p style={{ marginTop: '15px' }}>
+        Já é um Booker? <Link to="/login">Faça login</Link>
+      </p>
     </div>
   );
 }

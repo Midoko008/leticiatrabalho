@@ -59,9 +59,9 @@ export default function Login() {
       </form>
 
       <p style={{ textAlign: 'center' }}>
-        Não tem conta?{' '}
+        Não é um Booker?{' '}
         <Link to="/cadastro" style={{ color: '#007bff', textDecoration: 'none' }}>
-          Cadastre-se
+          Torne-se
         </Link>
       </p>
     </div>

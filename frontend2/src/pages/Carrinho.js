@@ -23,7 +23,8 @@ export default function Carrinho() {
         return res.json();
       })
       .then(data => {
-        setLivros(data.livros || []);
+        // Usar 'produtos' conforme backend, não 'livros'
+        setLivros(data.produtos || []);
         setValorTotal(data.valor_total ? Number(data.valor_total).toFixed(2) : '0.00');
         setLoading(false);
       })
@@ -54,7 +55,8 @@ export default function Carrinho() {
           const novaLista = livros.filter(p => p.id !== livroId);
           setLivros(novaLista);
 
-          const novoTotal = novaLista.reduce((total, p) => total + p.preco, 0);
+          // Garantir que preco é número para soma correta
+          const novoTotal = novaLista.reduce((total, p) => total + Number(p.preco), 0);
           setValorTotal(novoTotal.toFixed(2));
         }
       })
@@ -91,7 +93,7 @@ export default function Carrinho() {
           textAlign: 'center'
         }}
       >
-        Carrinho de Compras
+        Estante de livros
       </h1>
 
       <div
@@ -249,6 +251,7 @@ export default function Carrinho() {
           }}
           onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#34495e')}
           onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#4b6587')}
+          // Pode adicionar onClick para lógica de compra aqui
         >
           Confirmar compra
         </button>

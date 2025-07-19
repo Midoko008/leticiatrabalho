@@ -57,7 +57,7 @@ class Filtro(db.Model):
         return f'<Filtro {self.nome}>'
 
 class Livro(db.Model):
-    __tablename__ = 'livro'
+    __tablename__ = 'livros'
 
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(100), nullable=False)
@@ -81,9 +81,12 @@ class Carrinho(db.Model):
     __tablename__ = 'carrinho'
 
     id = db.Column(db.Integer, primary_key=True)
-    livro_id = db.Column(db.Integer, db.ForeignKey('livro.id'), nullable=False)
+    livro_id = db.Column(db.Integer, db.ForeignKey('livros.id'), nullable=False)
 
     livro = db.relationship('Livro', back_populates='carrinho_items')
 
+    acessadores_site_id = db.Column(db.Integer, db.ForeignKey('acessadores_site.id'), nullable=False)
+    usuario = db.relationship('AcessadoresSite')
+
     def __repr__(self):
-        return f'<Carrinho livro_id={self.livro_id}>'
+        return f'<Carrinho livro_id={self.livro_id} acessadores_site_id={self.acessadores_site_id}>'
