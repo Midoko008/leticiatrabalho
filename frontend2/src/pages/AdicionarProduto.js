@@ -15,7 +15,13 @@ export default function AdicionarLivro() {
   const navigate = useNavigate();
   const filtroBoxRef = useRef(null);
 
-  const usuario = JSON.parse(localStorage.getItem('usuario'));
+  // Obtém o usuário do localStorage, protegendo JSON.parse
+  let usuario = null;
+  try {
+    usuario = JSON.parse(localStorage.getItem('usuario'));
+  } catch {
+    usuario = null;
+  }
 
   useEffect(() => {
     fetch('http://localhost:5000/filtros')
@@ -55,29 +61,40 @@ export default function AdicionarLivro() {
         setFiltros([...filtros, novo]);
         setFiltroId(data.id);
         setNovoFiltro('');
+        setMostrarFiltros(false);
       })
       .catch(err => alert(err.message));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!nome || !preco || !imagemUrl || !filtroId || !usuario?.id) {
+
+    // Validação dos campos obrigatórios
+    if (!nome.trim() || !preco || !imagemUrl.trim() || !filtroId) {
       alert('Preencha todos os campos obrigatórios');
+      return;
+    }
+
+    if (!usuario || !usuario.id) {
+      alert('Usuário não autenticado.');
+      navigate('/login');
       return;
     }
 
     fetch('http://localhost:5000/livros', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'X-User-Id': String(usuario.id), // <-- Enviando o id do usuário no header
+      },
       body: JSON.stringify({
-        nome,
+        nome: nome.trim(),
         preco: parseFloat(preco),
-        imagem_url: imagemUrl,
+        imagem_url: imagemUrl.trim(),
         estoque: parseInt(estoque),
         filtro_id: parseInt(filtroId),
         sinopse: sinopse.trim(),
-        acessadores_site_id: usuario.id
-      })
+      }),
     })
       .then(async (res) => {
         const data = await res.json();

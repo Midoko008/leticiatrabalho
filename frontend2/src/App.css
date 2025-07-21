@@ -127,9 +127,8 @@ h1, h2 {
 }
 
 .botao-perfil {
-  background-color: #6c63ff;
+  background-color: #6BA9E9;
   color: #f0eaff;
-  border-color: #6c63ff;
 }
 
 .botao-perfil:hover {
@@ -140,7 +139,7 @@ h1, h2 {
 }
 
 .botao-adicionar {
-  background-color: #7b68ee;
+  background-color: #6BA9E9;
   border: none;
   color: white;
 }
@@ -150,7 +149,7 @@ h1, h2 {
 }
 
 .botao-carrinho.topo {
-  background-color: #b388ff;
+  background-color: #6BA9E9;
   color: #2a2a2a;
   border: none;
   padding: 10px 16px;
@@ -237,7 +236,7 @@ h1, h2 {
   position: absolute;
   bottom: 10px;
   right: 10px;
-  background-color: #b388ff;
+  background-color: #6BA9E9;
   border: none;
   padding: 6px 8px;
   border-radius: 50%;

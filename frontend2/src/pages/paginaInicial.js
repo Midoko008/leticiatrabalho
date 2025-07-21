@@ -36,7 +36,6 @@ export default function PaginaInicial() {
         if (!res.ok) throw new Error(`Erro ao buscar livros: ${res.statusText}`);
         let data = await res.json();
 
-        // Filtra pelo título localmente usando 'nome' (ajustado)
         if (filtro.trim()) {
           const termo = filtro.trim().toLowerCase();
           data = data.filter(l => l.nome.toLowerCase().includes(termo));
@@ -73,9 +72,30 @@ export default function PaginaInicial() {
 
   function adicionarAoCarrinho(e, livroId) {
     e.stopPropagation();
+
+    // Pega o usuário completo do localStorage e extrai o id
+    const usuario = localStorage.getItem('usuario');
+    let userId = null;
+    if (usuario) {
+      try {
+        const usuarioObj = JSON.parse(usuario);
+        userId = usuarioObj.id;
+      } catch {
+        userId = null;
+      }
+    }
+
+    if (!userId) {
+      alert('Usuário não autenticado.');
+      return;
+    }
+
     fetch('http://localhost:5000/carrinho', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'X-User-Id': userId
+      },
       body: JSON.stringify({ livro_id: livroId }),
     })
       .then(res => res.json())
@@ -162,7 +182,12 @@ export default function PaginaInicial() {
             onClick={() => abrirDetalhes(livro.id)}
             role="button"
             tabIndex={0}
-            onKeyDown={e => (e.key === 'Enter' ? abrirDetalhes(livro.id) : null)}
+            onKeyDown={e => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                abrirDetalhes(livro.id);
+              }
+            }}
           >
             <img
               src={livro.imagem_url}
